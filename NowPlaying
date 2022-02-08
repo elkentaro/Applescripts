@@ -1,0 +1,38 @@
+
+
+
+tell application "System Events"
+	
+	set lastTrack to ""
+	
+	repeat
+		if exists process "Music" then
+			tell application "Music"
+				if player state is playing then
+					set currentSong to name of current track
+					set currentArtist to artist of current track
+					
+					if currentSong is not lastTrack then
+						
+						set lastTrack to currentSong
+						set songfile to ((POSIX path of ((path to me as text) & "::")) as string) & "nowplaying.txt"
+						set songfile to (open for access POSIX file songfile with write permission)
+						set nowplaying to "               Now Playing : " & currentSong & " : - by " & currentArtist
+						set eof of songfile to 0
+						write nowplaying to songfile
+						close access songfile
+						
+					end if
+					
+				end if
+			end tell
+			
+			-- Wait 150 seconds to poll song title
+			delay 150
+		else
+			exit repeat
+			
+		end if
+	end repeat
+	
+end tell
